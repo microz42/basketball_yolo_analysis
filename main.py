@@ -11,7 +11,10 @@ def main():
     player_tracker = PlayerTracker("models/player_detector.pt")
 
     # run tracker
-    player_tracks = player_tracker.get_object_tracks(video_frames)
+    player_tracks = player_tracker.get_object_tracks(video_frames,
+                                                     read_from_stub=True,
+                                                     stub_path = "stubs/player_track_stubs.pkl"
+                                                     )
 
     print(player_tracks)
 
