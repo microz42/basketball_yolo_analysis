@@ -1,5 +1,7 @@
 from ultralytics import YOLO
 import supervision as sv
+import numpy as np
+import pandas as pd
 import sys
 sys.path.append("../")
 from utils import read_stub, save_stub
@@ -55,3 +57,48 @@ class BallTracker:
             
         save_stub(stub_path, tracks)
         return tracks
+    
+
+    def remove_wrong_detections(self, ball_positions):
+
+        maximum_allowed_distance = 25  # maximum travled by 25 pixels
+        last_good_frame_index = -1
+
+        for i in range(len(ball_positions)):
+            current_bbox = ball_positions[i].get(1,{}).get("bbox", [])
+
+            if len(current_bbox) == 0:
+                continue
+
+            if last_good_frame_index == -1:  # first ball detection
+                last_good_frame_index = i
+                continue
+
+            last_good_box = ball_positions[last_good_frame_index].get(1,{}).get('bbox',[])
+            frame_gap = i - last_good_frame_index
+            adjusted_max_distance = maximum_allowed_distance * frame_gap
+
+            # calculate the distance between the last good bbox and the current position
+            # if distance is more than the adjusted distance suppress detection
+            if np.linalg.norm(np.array(last_good_box[:2]) - np.array(current_bbox[:2])) > adjusted_max_distance:
+                # empty detection
+                ball_positions[i] = {}
+            else:
+                last_good_frame_index = i
+        
+        return ball_positions
+    
+
+    def interpolate_ball_positions(self, ball_positions):
+        ball_positions = [x.get(1,{}).get('bbox',[]) for x in ball_positions]  # if bbox empty > empty list
+        df_ball_positions = pd.DataFrame(ball_positions, columns=["x1",'y1','x2', 'y2'])
+
+
+        # interpolate missing values
+        df_ball_positions = df_ball_positions.interpolate()
+        df_ball_positions = df_ball_positions.bfill()
+
+        ball_positions = [{1:{"bbox":x}} for x in df_ball_positions.to_numpy().tolist() ]
+
+
+        return ball_positions
