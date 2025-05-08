@@ -14,6 +14,8 @@ def read_video(video_path):
 
 
 def save_video(output_video_frames, output_video_path):
+
+    # if folder doesn't exist, create it
     if not os.path.exists(os.path.dirname(output_video_path)):
         os.mkdir(os.path.dirname(output_video_path))
 
