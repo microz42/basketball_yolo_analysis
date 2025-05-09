@@ -4,6 +4,7 @@ from drawers import(
     PlayerTracksDrawer,
     BallTracksDrawer
 )
+from team_assigner import TeamAssigner
 
 
 def main():
@@ -25,6 +26,15 @@ def main():
                                                      read_from_stub=True,
                                                      stub_path = "stubs/ball_track_stubs.pkl"
                                                      )
+
+    # Assign player teams
+    team_assigner = TeamAssigner()
+    player_teams = team_assigner.get_player_teams_across_frames(video_frames,
+                                                                player_tracks,
+                                                                read_from_stub=True,
+                                                                stub_path="stubs/player_assignment_stub.pkl"
+                                                                )
+    print(player_teams)
 
     # remove wrong ball detections
     ball_tracks = ball_tracker.remove_wrong_detections(ball_tracks)
