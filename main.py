@@ -5,6 +5,7 @@ from drawers import(
     BallTracksDrawer
 )
 from team_assigner import TeamAssigner
+from ball_acquisition import BallAcquisitionDetector
 
 
 def main():
@@ -35,6 +36,12 @@ def main():
                                                                 stub_path="stubs/player_assignment_stub.pkl"
                                                                 )
     # print(player_teams)
+
+    # Ball Acquisition
+    ball_acquisition_detector = BallAcquisitionDetector()
+    ball_acquisition = ball_acquisition_detector.detect_ball_posession(player_tracks, ball_tracks)
+
+    print(ball_acquisition)
 
     # remove wrong ball detections
     ball_tracks = ball_tracker.remove_wrong_detections(ball_tracks)
