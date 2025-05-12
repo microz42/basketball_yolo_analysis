@@ -62,8 +62,11 @@ class BallAcquisitionDetector:
 
         intersection_x1 = max(px1, bx1)
         intersection_y1 = max(py1, by1)
-        intersection_x2 = max(px2, bx2)
+        intersection_x2 = min(px2, bx2)
         intersection_y2 = min(py2, by2)
+
+        if intersection_x2 < intersection_x1 or intersection_y2 < intersection_y1:
+            return 0
 
         if intersection_x2 < intersection_x1 or intersection_y2 < intersection_y1:
             return 0.0

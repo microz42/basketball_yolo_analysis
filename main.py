@@ -27,6 +27,10 @@ def main():
                                                      read_from_stub=True,
                                                      stub_path = "stubs/ball_track_stubs.pkl"
                                                      )
+    # remove wrong ball detections
+    ball_tracks = ball_tracker.remove_wrong_detections(ball_tracks)
+    # interpolate ball tracks
+    ball_tracks = ball_tracker.interpolate_ball_positions(ball_tracks)
 
     # Assign player teams
     team_assigner = TeamAssigner()
@@ -40,15 +44,7 @@ def main():
     # Ball Acquisition
     ball_acquisition_detector = BallAcquisitionDetector()
     ball_acquisition = ball_acquisition_detector.detect_ball_posession(player_tracks, ball_tracks)
-
-    print(ball_acquisition)
-
-    # remove wrong ball detections
-    ball_tracks = ball_tracker.remove_wrong_detections(ball_tracks)
-
-    # interpolate ball tracks
-    ball_tracks = ball_tracker.interpolate_ball_positions(ball_tracks)
-
+    # print(ball_acquisition)
 
     # draw output
     # initialize drawer
@@ -58,7 +54,8 @@ def main():
     # draw object tracks
     output_video_frames = player_tracks_drawer.draw(video_frames,
                                                     player_tracks,
-                                                    player_assignment)
+                                                    player_assignment,
+                                                    ball_acquisition)
     output_video_frames = ball_tracks_drawer.draw(output_video_frames, ball_tracks)
 
     # save video
