@@ -33,7 +33,7 @@ class TeamAssigner:
 
         classes = [self.team_1_class_name, self.team_2_class_name]
 
-        inputs = self.processor(text=classes, images=pil_image, return_tensors="pt", paddig=True)
+        inputs = self.processor(text=classes, images=pil_image, return_tensors="pt", padding=True)
 
         outputs = self.model(**inputs)
         logits_per_image = outputs.logits_per_image # this is the image-text similarity score
@@ -54,7 +54,7 @@ class TeamAssigner:
         if player_color == self.team_1_class_name:
             team_id = 1
         
-        self.player_team_dict[player_id] == team_id
+        self.player_team_dict[player_id] = team_id
         return team_id
 
 
