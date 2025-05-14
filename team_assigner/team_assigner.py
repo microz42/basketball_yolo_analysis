@@ -9,12 +9,14 @@ from utils import read_stub, save_stub
 class TeamAssigner:
     def __init__(self,
                  team_1_class_name="white shirt",
-                 team_2_class_name="dark shirt",
+                #  team_2_class_name="dark shirt",
+                 team_2_class_name="dark blue shirt",
                  ):
         
         self.team_1_class_name = team_1_class_name
         self.team_2_class_name = team_2_class_name
 
+        self.team_colors = {}
         self.player_team_dict = {}
 
     def load_model(self):
@@ -84,8 +86,3 @@ class TeamAssigner:
         save_stub(stub_path, player_assignment)
         
         return player_assignment
-
-
-    
-
-

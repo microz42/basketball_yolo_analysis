@@ -73,8 +73,8 @@ class TeamBallControlDrawer:
         team_1 = team_1_num_frames/(team_ball_control_till_frame.shape[0])
         team_2 = team_2_num_frames/(team_ball_control_till_frame.shape[0])
 
-        cv2.putText(overlay, f"Team 1 Ball Control: {team_1*100: .2f}", (text_x, text_y1), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0,0,0), font_thickness)
-        cv2.putText(overlay, f"Team 2 Ball Control: {team_2*100: .2f}", (text_x, text_y2), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0,0,0), font_thickness)
+        cv2.putText(frame, f"Team 1 Ball Control: {team_1*100: .2f}%", (text_x, text_y1), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0,0,0), font_thickness)
+        cv2.putText(frame, f"Team 2 Ball Control: {team_2*100: .2f}%", (text_x, text_y2), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0,0,0), font_thickness)
 
         return frame
 
