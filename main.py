@@ -22,7 +22,7 @@ def main():
     ball_tracker = BallTracker("models/ball_detector_model.pt")
 
     # initialize Court keypoint detector
-    court_keypoint_detector = CourtKeypointDetector("models/court_keypoint_detector.pt")
+    court_keypoint_detector = CourtKeypointDetector("models/my_court_keypoint_detector.pt")
 
     # run tracker
     player_tracks = player_tracker.get_object_tracks(video_frames,
@@ -36,12 +36,12 @@ def main():
                                                      )
 
    # Get Court Keypoints
-   court_keypoints = court_keypoint_detector.get_court_keypoints(video_frames,
+    court_keypoints = court_keypoint_detector.get_court_keypoints(video_frames,
                                                                  read_from_stub=True,
                                                                  stub_path = "stubs/court_key_points_stubs.pkl",
                                                                  ) 
 
-    print(court_keypoitns)
+    print(court_keypoints)
     
     # remove wrong ball detections
     ball_tracks = ball_tracker.remove_wrong_detections(ball_tracks)
