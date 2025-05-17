@@ -6,7 +6,7 @@ from utils.bbox_utils import measure_distance, get_center_of_bbox
 class BallAcquisitionDetector:
     def __init__(self):
         self.posession_threshold = 50
-        self.min_frames = 11
+        self.min_frames = 10
         self.containment_threshold = 0.8   # bbox overlap
     
     def get_key_basketball_player_assignment_points(self, player_bbox, ball_center):

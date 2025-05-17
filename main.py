@@ -15,7 +15,7 @@ from pass_and_interception_detector import PassAndInterceptionDetector
 def main():
 
     # Read video
-    video_frames = read_video("input_videos/video_2.mp4")
+    video_frames = read_video("input_videos/video_3.mp4")
 
     # Initialize Tracker
     player_tracker = PlayerTracker("models/player_detector.pt")
