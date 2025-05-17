@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 import sys
 sys.path.append('../')
-from utils import read_video, save_video
+from utils import read_stub, save_stub
 
 
 class CourtKeypointDetector:
@@ -10,10 +10,19 @@ class CourtKeypointDetector:
     
     def get_court_keypoints(self, frames, read_from_stub=False, stub_path=None):
 
+        # stubs logic
+        court_keypoints = read_stub(read_from_stub, stub_path)
+        if court_keypoints is not None:
+            if len(court_keypoints) == len(frames):
+                return court_keypoints
+
         batch_size=20
         court_keypoints=[]
         for i in range(0, len(frames), batch_size):
             detections_batch = self.model.predict(frames[i:i+batch_size], conf=0.5)
-            court_keypoints.extend(detection_batch[0].keypoints.xy)
+            for detection in detections_batch:
+               court_keypoints.append(detection)
+            
+        save_stub(stub_path, court_keypoints)
         
         return court_keypoints

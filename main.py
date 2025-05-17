@@ -8,18 +8,21 @@ from drawers import(
 )
 from team_assigner import TeamAssigner
 from ball_acquisition import BallAcquisitionDetector
-# from ball_acquisition import BallAquisitionDetector
 from pass_and_interception_detector import PassAndInterceptionDetector
+from court_keypoint_detector import CourtKeypointDetector
 
 
 def main():
 
     # Read video
-    video_frames = read_video("input_videos/video_3.mp4")
+    video_frames = read_video("input_videos/video_2.mp4")
 
     # Initialize Tracker
     player_tracker = PlayerTracker("models/player_detector.pt")
     ball_tracker = BallTracker("models/ball_detector_model.pt")
+
+    # initialize Court keypoint detector
+    court_keypoint_detector = CourtKeypointDetector("models/court_keypoint_detector.pt")
 
     # run tracker
     player_tracks = player_tracker.get_object_tracks(video_frames,
@@ -31,6 +34,15 @@ def main():
                                                      read_from_stub=True,
                                                      stub_path = "stubs/ball_track_stubs.pkl"
                                                      )
+
+   # Get Court Keypoints
+   court_keypoints = court_keypoint_detector.get_court_keypoints(video_frames,
+                                                                 read_from_stub=True,
+                                                                 stub_path = "stubs/court_key_points_stubs.pkl",
+                                                                 ) 
+
+    print(court_keypoitns)
+    
     # remove wrong ball detections
     ball_tracks = ball_tracker.remove_wrong_detections(ball_tracks)
     # interpolate ball tracks
