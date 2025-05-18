@@ -5,11 +5,13 @@ from drawers import(
     BallTracksDrawer,
     TeamBallControlDrawer,
     PassInterceptionDrawer,
+    CourtKeypointDrawer,
 )
 from team_assigner import TeamAssigner
 from ball_acquisition import BallAcquisitionDetector
 from pass_and_interception_detector import PassAndInterceptionDetector
 from court_keypoint_detector import CourtKeypointDetector
+
 
 
 def main():
@@ -41,7 +43,6 @@ def main():
                                                                  stub_path = "stubs/court_key_points_stubs.pkl",
                                                                  ) 
 
-    print(court_keypoints)
     
     # remove wrong ball detections
     ball_tracks = ball_tracker.remove_wrong_detections(ball_tracks)
@@ -60,18 +61,12 @@ def main():
     # Ball Acquisition
     ball_acquisition_detector = BallAcquisitionDetector()
     ball_acquisition = ball_acquisition_detector.detect_ball_posession(player_tracks, ball_tracks)
-    # ball_acquisition_detector = BallAquisitionDetector()
-    # ball_acquisition = ball_acquisition_detector.detect_ball_possession(player_tracks, ball_tracks)
-    # print(ball_acquisition)
 
     # Detect passes and interceptions
     pass_and_interception_detector = PassAndInterceptionDetector()
     passes = pass_and_interception_detector.detect_passes(ball_acquisition, player_assignment)
     interceptions = pass_and_interception_detector.detect_interceptions(ball_acquisition, player_assignment)
 
-    print(passes)
-    print("======================")
-    print(interceptions)
 
     # draw output
     # initialize drawer
@@ -79,6 +74,7 @@ def main():
     ball_tracks_drawer = BallTracksDrawer()
     team_ball_control_drawer = TeamBallControlDrawer()
     pass_interception_drawer = PassInterceptionDrawer()
+    court_keypoint_drawer = CourtKeypointDrawer()
 
     # draw object tracks
     output_video_frames = player_tracks_drawer.draw(video_frames,
@@ -96,6 +92,10 @@ def main():
     output_video_frames = pass_interception_drawer.draw(output_video_frames,
                                                         passes,
                                                         interceptions)
+
+    # Draw court keypoints
+    output_video_frames = court_keypoint_drawer.draw(output_video_frames,
+                                                     court_keypoints)
 
     # save video
     save_video(output_video_frames, "output_videos/output_video.avi")
