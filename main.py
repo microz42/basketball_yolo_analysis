@@ -6,25 +6,27 @@ from drawers import(
     TeamBallControlDrawer,
     PassInterceptionDrawer,
     CourtKeypointDrawer,
+    TacticalViewDrawer,
 )
 from team_assigner import TeamAssigner
 from ball_acquisition import BallAcquisitionDetector
 from pass_and_interception_detector import PassAndInterceptionDetector
 from court_keypoint_detector import CourtKeypointDetector
+from tactical_view_converter import TacticalViewConverter
 
 
 
 def main():
 
     # Read video
-    video_frames = read_video("input_videos/video_2.mp4")
+    video_frames = read_video("input_videos/video_3.mp4")
 
     # Initialize Tracker
     player_tracker = PlayerTracker("models/player_detector.pt")
     ball_tracker = BallTracker("models/ball_detector_model.pt")
 
     # initialize Court keypoint detector
-    court_keypoint_detector = CourtKeypointDetector("models/my_court_keypoint_detector.pt")
+    court_keypoint_detector = CourtKeypointDetector("models/court_keypoint_detector.pt")
 
     # run tracker
     player_tracks = player_tracker.get_object_tracks(video_frames,
@@ -67,6 +69,9 @@ def main():
     passes = pass_and_interception_detector.detect_passes(ball_acquisition, player_assignment)
     interceptions = pass_and_interception_detector.detect_interceptions(ball_acquisition, player_assignment)
 
+    # Tactical View
+    tactical_view_converter = TacticalViewConverter(court_image_path="./images/basketball_court.png")
+
 
     # draw output
     # initialize drawer
@@ -75,6 +80,7 @@ def main():
     team_ball_control_drawer = TeamBallControlDrawer()
     pass_interception_drawer = PassInterceptionDrawer()
     court_keypoint_drawer = CourtKeypointDrawer()
+    tactical_view_drawer = TacticalViewDrawer()
 
     # draw object tracks
     output_video_frames = player_tracks_drawer.draw(video_frames,
@@ -96,6 +102,13 @@ def main():
     # Draw court keypoints
     output_video_frames = court_keypoint_drawer.draw(output_video_frames,
                                                      court_keypoints)
+
+    # Tactical View
+    output_video_frames = tactical_view_drawer.draw(output_video_frames,
+                                                   tactical_view_converter.court_image_path,
+                                                   tactical_view_converter.width,
+                                                   tactical_view_converter.height,
+                                                   )
 
     # save video
     save_video(output_video_frames, "output_videos/output_video.avi")

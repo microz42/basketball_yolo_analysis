@@ -6,8 +6,8 @@ class CourtKeypointDrawer:
         self.keypoint_color = "#ff2c2c"
     
     def draw(self, frames, court_keypoints):
-        vertex_annotator = sv.VertexAnnotatr(
-            color=sv.cColor.from_hex(self.keypoint_color),
+        vertex_annotator = sv.VertexAnnotator(
+            color=sv.Color.from_hex(self.keypoint_color),
             radius=8,
         )
 
