@@ -71,6 +71,7 @@ def main():
 
     # Tactical View
     tactical_view_converter = TacticalViewConverter(court_image_path="./images/basketball_court.png")
+    court_keypoints = tactical_view_converter.validate_keypoints(court_keypoints)  # if something is not good, overwrite it with 0,0
 
 
     # draw output
