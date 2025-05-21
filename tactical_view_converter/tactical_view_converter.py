@@ -1,7 +1,10 @@
 from copy import deepcopy
 import sys
+from .homograph import Homograph
 sys.path.append("../")
-from utils import measure_distance
+from utils import measure_distance, get_foot_position
+import numpy as np
+import cv2
 
 
 class TacticalViewConverter:
@@ -91,3 +94,48 @@ class TacticalViewConverter:
 
         return keypoints_list
 
+    def transform_players_to_tactical_view(self, keypoints_list, player_tracks):
+        tactical_player_positions = []
+
+        for frame_idx, (frame_keypoints, frame_tracks) in enumerate(zip(keypoints_list, player_tracks)):
+            tactical_positions = {}
+
+            frame_keypoints = frame_keypoints.xy.tolist()[0]
+
+            if frame_keypoints is None or len(frame_keypoints) == 0:
+                tactical_player_positions.append(tactical_positions)
+                continue
+                
+            detected_keypoints = frame_keypoints
+
+            valid_indicies = [i for i, kp in enumerate(detected_keypoints) if kp[0]>0 and kp[1]>0]
+
+            if len(valid_indicies) < 4:
+                tactical_player_positions.append(tactical_positions)
+                continue
+                
+            source_points = np.array([detected_keypoints[i] for i in valid_indicies], dtype=np.float32)
+            target_points = np.array([self.key_points[i] for i in valid_indicies], dtype=np.float32)
+
+            try: 
+                homography = Homograph(source_points, target_points)
+
+                for player_id, player_data in frame_tracks.items():
+                    bbox = player_data["bbox"]
+                    player_position = np.array([get_foot_position(bbox)])
+
+                    tactical_position = homography.transform_points(player_position)
+
+                    tactical_positions[player_id] = tactical_position[0].tolist()
+
+            
+            except (ValueError, cv2.error) as e:
+                pass
+
+            tactical_player_positions.append(tactical_positions)
+        
+        return tactical_player_positions
+
+                
+
+    
