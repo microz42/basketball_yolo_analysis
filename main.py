@@ -7,6 +7,7 @@ from drawers import(
     PassInterceptionDrawer,
     CourtKeypointDrawer,
     TacticalViewDrawer,
+    SpeedAndDistanceDrawer,
 )
 from team_assigner import TeamAssigner
 from ball_acquisition import BallAcquisitionDetector
@@ -84,9 +85,7 @@ def main():
     player_distance_per_frame = speed_distance_calculator.calculate_distance(tactical_player_positions)
     player_speed_per_frame = speed_distance_calculator.calculate_speed(player_distance_per_frame)
 
-    print(player_distance_per_frame)
-    print("===============")
-    print(player_speed_per_frame)
+    
 
 
     # draw output
@@ -97,6 +96,7 @@ def main():
     pass_interception_drawer = PassInterceptionDrawer()
     court_keypoint_drawer = CourtKeypointDrawer()
     tactical_view_drawer = TacticalViewDrawer()
+    speed_distance_drawer = SpeedAndDistanceDrawer()
 
     # draw object tracks
     output_video_frames = player_tracks_drawer.draw(video_frames,
@@ -129,6 +129,14 @@ def main():
                                                    player_assignment,
                                                    ball_acquisition,
                                                    )
+    
+    # Speed and Distance Drawer
+    output_video_frames = speed_distance_drawer.draw(
+        output_video_frames,
+        player_tracks,
+        player_distance_per_frame,
+        player_speed_per_frame,
+    )
 
     # save video
     save_video(output_video_frames, "output_videos/output_video.avi")
