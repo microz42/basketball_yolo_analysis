@@ -13,7 +13,7 @@ from ball_acquisition import BallAcquisitionDetector
 from pass_and_interception_detector import PassAndInterceptionDetector
 from court_keypoint_detector import CourtKeypointDetector
 from tactical_view_converter import TacticalViewConverter
-
+from speed_and_distance_calculator import SpeedAndDistanceCalculator
 
 
 def main():
@@ -73,6 +73,20 @@ def main():
     tactical_view_converter = TacticalViewConverter(court_image_path="./images/basketball_court.png")
     court_keypoints = tactical_view_converter.validate_keypoints(court_keypoints)  # if something is not good, overwrite it with 0,0
     tactical_player_positions = tactical_view_converter.transform_players_to_tactical_view(court_keypoints, player_tracks)
+
+    # speed and distance calculator
+    speed_distance_calculator = SpeedAndDistanceCalculator(
+        tactical_view_converter.width,
+        tactical_view_converter.height,
+        tactical_view_converter.actual_width_in_meters,
+        tactical_view_converter.actual_height_in_meters,
+    )
+    player_distance_per_frame = speed_distance_calculator.calculate_distance(tactical_player_positions)
+    player_speed_per_frame = speed_distance_calculator.calculate_speed(player_distance_per_frame)
+
+    print(player_distance_per_frame)
+    print("===============")
+    print(player_speed_per_frame)
 
 
     # draw output
