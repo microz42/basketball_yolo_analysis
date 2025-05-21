@@ -1,4 +1,5 @@
 from utils import read_video, save_video
+import os
 from trackers import PlayerTracker, BallTracker
 from drawers import(
     PlayerTracksDrawer,
@@ -16,34 +17,55 @@ from court_keypoint_detector import CourtKeypointDetector
 from tactical_view_converter import TacticalViewConverter
 from speed_and_distance_calculator import SpeedAndDistanceCalculator
 
+from configs import (
+    STUBS_DEFAULT_PATH,
+    PLAYER_DETECTOR_PATH,
+    BALL_DETECTOR_PATH,
+    COURT_KEYPOINT_DETECTOR_PATH,
+    OUTPUT_VIDEO_PATH,
+    )
+import argparse
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description= "Basketball video analysis")
+    parser.add_argument("input_video", type=str, help="path of input video file")
+    parser.add_argument("--stub_path", type=str, default=STUBS_DEFAULT_PATH, help="path to stub directory")
+    # parser.add_argument("--player_detector_path", type=str, default=PLAYER_DETECTOR_PATH, help="path to player detector model")
+    # parser.add_argument("--ball_detector_path", type=str, default=BALL_DETECTOR_PATH, help="path to ball detector model")
+    # parser.add_argument("--court_keypoint_detector_path", type=str, default=COURT_KEYPOINT_DETECTOR_PATH, help="path to court keypoint detector model")
+    parser.add_argument("--output_video_path", type=str, default=OUTPUT_VIDEO_PATH, help="path to output video")
+    return parser.parse_args()
+
 
 def main():
+    args = parse_args()
 
     # Read video
-    video_frames = read_video("input_videos/video_3.mp4")
+    video_frames = read_video(args.input_video)
 
     # Initialize Tracker
-    player_tracker = PlayerTracker("models/player_detector.pt")
-    ball_tracker = BallTracker("models/ball_detector_model.pt")
+    player_tracker = PlayerTracker(PLAYER_DETECTOR_PATH)
+    ball_tracker = BallTracker(BALL_DETECTOR_PATH)
 
     # initialize Court keypoint detector
-    court_keypoint_detector = CourtKeypointDetector("models/court_keypoint_detector.pt")
+    court_keypoint_detector = CourtKeypointDetector(COURT_KEYPOINT_DETECTOR_PATH)
 
     # run tracker
     player_tracks = player_tracker.get_object_tracks(video_frames,
                                                      read_from_stub=True,
-                                                     stub_path = "stubs/player_track_stubs.pkl"
+                                                     stub_path = os.path.join(args.stub_path, "player_track_stubs.pkl")
                                                      )
 
     ball_tracks = ball_tracker.get_object_tracks(video_frames,
                                                      read_from_stub=True,
-                                                     stub_path = "stubs/ball_track_stubs.pkl"
+                                                     stub_path = os.path.join(args.stub_path, "ball_track_stubs.pkl")
                                                      )
 
    # Get Court Keypoints
     court_keypoints = court_keypoint_detector.get_court_keypoints(video_frames,
                                                                  read_from_stub=True,
-                                                                 stub_path = "stubs/court_key_points_stubs.pkl",
+                                                                 stub_path = os.path.join(args.stub_path, "court_key_points_stubs.pkl")
                                                                  ) 
 
     
@@ -57,7 +79,7 @@ def main():
     player_assignment = team_assigner.get_player_teams_across_frames(video_frames,
                                                                 player_tracks,
                                                                 read_from_stub=True,
-                                                                stub_path="stubs/player_assignment_stub.pkl"
+                                                                stub_path = os.path.join(args.stub_path, "player_assignment_stubs.pkl")
                                                                 )
     # print(player_teams)
 
@@ -139,7 +161,7 @@ def main():
     )
 
     # save video
-    save_video(output_video_frames, "output_videos/output_video.avi")
+    save_video(output_video_frames, args.output_video_path)
 
 
 if __name__ == "__main__":
